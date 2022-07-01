@@ -226,7 +226,6 @@
       url:"${APP_PATH}/depts",
       type:"GET",
       success:function(result) {
-        // console.log(result)
         $.each(result.extend.depts, function() {
           var optionEle = $("<option></option>").append(this.deptName).attr("value", this.deptId);
           optionEle.appendTo("#empAddModal select");
@@ -238,7 +237,11 @@
   function validate_add_form() {
     var empName = $(empName_add_input).val();
     var regName = /(^[a-zA-Z0-9_-]{6,16}$)|(^[\u2E80-\u9FFF]{2,5})/;
-    if(!regName.test(empName)){
+    if(empName === ""){
+      show_validate_msg(empName_add_input, "error", "User name is required.");
+      return false;
+    }
+    else if(!regName.test(empName)){
       show_validate_msg(empName_add_input, "error", "User Name should be 2-5 digits Chinese character or 6-16 English character with number and \"-\", \"_\".");
       return false;
     } else {
@@ -246,7 +249,11 @@
     }
     var empEmail = $(empEmail_add_input).val();
     var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
-    if(!regEmail.test(empEmail)){
+    if(empEmail === ""){
+      show_validate_msg(empEmail_add_input, "error", "Email is required.");
+      return false;
+    }
+    else if(!regEmail.test(empEmail)){
       show_validate_msg(empEmail_add_input, "error", "Email format incorrect.")
       return false;
     } else {
@@ -268,9 +275,9 @@
   }
 
   $("#emp_save_btn").click(function() {
-    if(!validate_add_form()){
-      return false;
-    }
+    // if(!validate_add_form()){
+    //   return false;
+    // }
     if($(this).attr("ajax-validate") === "error"){
       return false;
     }
@@ -279,8 +286,16 @@
       type:"POST",
       data:$("#empAddModal form").serialize(),
       success:function(result){
+        if(result.code === 100) {
           $("#empAddModal").modal('hide');
           to_page(totalRecord);
+        } else {
+          if(result.extend.backEndValidateError === "empName"){
+            show_validate_msg(empName_add_input, "error", "User Name should be 2-5 digits Chinese character or 6-16 English character with number and \"-\", \"_\".");
+          } else if(result.extend.backEndValidateError === "email") {
+            show_validate_msg(empEmail_add_input, "error", "Email format incorrect.");
+          }
+        }
       }
     });
   });
@@ -302,17 +317,17 @@
     });
   });
 
-  $(empEmail_add_input).change(function() {
-    var empEmail = $(empEmail_add_input).val();
-    var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
-    if(!regEmail.test(empEmail)){
-      show_validate_msg(empEmail_add_input, "error", "Email format incorrect.")
-      return false;
-    } else {
-      show_validate_msg(empEmail_add_input, "success", "")
-    }
-    return true;
-  });
+  // $(empEmail_add_input).change(function() {
+  //   var empEmail = $(empEmail_add_input).val();
+  //   var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+  //   if(!regEmail.test(empEmail)){
+  //     show_validate_msg(empEmail_add_input, "error", "Email format incorrect.")
+  //     return false;
+  //   } else {
+  //     show_validate_msg(empEmail_add_input, "success", "")
+  //   }
+  //   return true;
+  // });
 </script>
 </body>
 </html>
