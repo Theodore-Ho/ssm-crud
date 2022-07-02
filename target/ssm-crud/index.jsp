@@ -157,9 +157,10 @@
 </div>
 <script type="text/javascript">
 
-  var totalRecord;
+  var totalRecord, currentPage;
   var empName_add_input = "#empName_add_input";
   var empEmail_add_input = "#empEmail_add_input";
+  var empEmail_update_input = "#empEmail_update_input";
 
   $(function (){
     to_page(1);
@@ -204,6 +205,7 @@
     $("#page_info_area").empty();
     $("#page_info_area").append("Now at page " + result.extend.pageInfo.pageNum + "; Total " + result.extend.pageInfo.pages + " pages ; Total " + result.extend.pageInfo.total + " data.");
     totalRecord = result.extend.pageInfo.total;
+    currentPage = result.extend.pageInfo.pageNum;
   }
 
   function build_page_nav(result) {
@@ -380,8 +382,11 @@
   });
 
   $(document).on("click", ".edit_btn", function(){
+    $("#empUpdateModal form").find("*").removeClass("has-error has-success");
+    $("#empUpdateModal form").find(".help-block").text("");
     getDepts("#empUpdateModal select");
     getEmp($(this).attr("edit-id"));
+    $("#emp_update_btn").attr("edit-id", $(this).attr("edit-id"));
     $("#empUpdateModal").modal({
       backdrop: "static"
     });
@@ -394,12 +399,56 @@
       success:function(result){
         var empData = result.extend.emp;
         $("#empName_update_static").text(empData.empName);
-        $("#empEmail_update_input").val(empData.email);
+        $(empEmail_update_input).val(empData.email);
         $("#empUpdateModal input[name=gender]").val([empData.gender]);
         $("#empUpdateModal select").val([empData.dId]);
       }
     });
   }
+
+  $(empEmail_update_input).change(function() {
+    var empEmail = $(empEmail_update_input).val();
+    var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+    if(!regEmail.test(empEmail)){
+      show_validate_msg(empEmail_update_input, "error", "Email format incorrect.")
+      return false;
+    } else {
+      show_validate_msg(empEmail_update_input, "success", "")
+    }
+    return true;
+  });
+
+  function validate_update_form(){
+    var empEmail = $(empEmail_update_input).val();
+    var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+    if(empEmail === ""){
+      show_validate_msg(empEmail_update_input, "error", "Email is required.");
+      return false;
+    }
+    else if(!regEmail.test(empEmail)){
+      show_validate_msg(empEmail_update_input, "error", "Email format incorrect.")
+      return false;
+    } else {
+      show_validate_msg(empEmail_update_input, "success", "")
+    }
+    return true;
+  }
+
+  $("#emp_update_btn").click(function(){
+    if(!validate_update_form()){
+      return false;
+    }
+
+    $.ajax({
+      url:"${APP_PATH}/emp/" + $(this).attr("edit-id"),
+      type:"PUT",
+      data:$("#empUpdateModal form").serialize(),
+      success:function(result){
+        $("#empUpdateModal").modal('hide');
+        to_page(currentPage);
+      }
+    });
+  });
 </script>
 </body>
 </html>
