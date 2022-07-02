@@ -22,7 +22,7 @@
   <script src="<%=app_path%>/static/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
-<!-- Modal -->
+<!-- Modal add new -->
 <div class="modal fade" id="empAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -68,6 +68,55 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="emp_save_btn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal edit-->
+<div class="modal fade" id="empUpdateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Update employee</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-10">
+              <p class="form-control-static" id="empName_update_static"></p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Email</label>
+            <div class="col-sm-10">
+              <input type="text" name="email" class="form-control" id="empEmail_update_input" placeholder="example@gmail.com">
+              <span class="help-block"></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Gender</label>
+            <div class="col-sm-10">
+              <label class="radio-inline">
+                <input type="radio" name="gender" id="gender1_update_input" value="M" checked="checked"> Male
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="gender" id="gender2_update_input" value="F"> Female
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Department</label>
+            <div class="col-sm-4">
+              <select class="form-control" name="dId"></select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="emp_update_btn">Update</button>
       </div>
     </div>
   </div>
@@ -139,9 +188,10 @@
       var genderTd = $("<td></td>").append(item.gender === 'M' ? "Male" : "Female");
       var emailTd = $("<td></td>").append(item.email);
       var deptNameTd = $("<td></td>").append(item.department.deptName);
-      var editBtn = $("<button></button>").addClass("btn btn-primary btn-sm")
+      var editBtn = $("<button></button>").addClass("btn btn-primary btn-sm edit_btn")
               .append($("<span></span>").addClass("glyphicon glyphicon-pencil")).append("Edit");
-      var delBtn = $("<button></button>").addClass("btn btn-danger btn-sm")
+      editBtn.attr("edit-id", item.empId);
+      var delBtn = $("<button></button>").addClass("btn btn-danger btn-sm delete_btn")
               .append($("<span></span>").addClass("glyphicon glyphicon-trash")).append("Delete");
       var btnTd = $("<td></td>").append(editBtn).append(" ").append(delBtn);
       $("<tr></tr>").append(empIdTd).append(empNameTd).append(genderTd)
@@ -228,7 +278,7 @@
       success:function(result) {
         $.each(result.extend.depts, function() {
           var optionEle = $("<option></option>").append(this.deptName).attr("value", this.deptId);
-          optionEle.appendTo("#empAddModal select");
+          optionEle.appendTo(element);
         });
       }
     });
@@ -328,6 +378,28 @@
     }
     return true;
   });
+
+  $(document).on("click", ".edit_btn", function(){
+    getDepts("#empUpdateModal select");
+    getEmp($(this).attr("edit-id"));
+    $("#empUpdateModal").modal({
+      backdrop: "static"
+    });
+  });
+
+  function getEmp(id) {
+    $.ajax({
+      url:"${APP_PATH}/emp/" + id,
+      type:"GET",
+      success:function(result){
+        var empData = result.extend.emp;
+        $("#empName_update_static").text(empData.empName);
+        $("#empEmail_update_input").val(empData.email);
+        $("#empUpdateModal input[name=gender]").val([empData.gender]);
+        $("#empUpdateModal select").val([empData.dId]);
+      }
+    });
+  }
 </script>
 </body>
 </html>

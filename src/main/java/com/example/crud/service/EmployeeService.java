@@ -29,4 +29,8 @@ public class EmployeeService {
         long count = employeeMapper.countByExample(example);
         return count == 0; //database already contains this name?
     }
+
+    public Employee getEmp(Integer id) {
+        return employeeMapper.selectByPrimaryKey(id);
+    }
 }
