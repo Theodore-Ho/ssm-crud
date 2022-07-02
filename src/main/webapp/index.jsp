@@ -121,6 +121,41 @@
     </div>
   </div>
 </div>
+<!-- Modal delete confirm -->
+<div class="modal fade" id="empDeleteModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Delete Confirm</h4>
+      </div>
+      <div class="modal-body">
+        <p id="message_delete_static"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="confirm_delete_btn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal warning -->
+<div class="modal fade" id="warningModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Warning</h4>
+      </div>
+      <div class="modal-body">
+        <p id="message_warning_static"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="container">
   <div class="row">
     <div class="col-md-12">
@@ -160,7 +195,8 @@
 </div>
 <script type="text/javascript">
 
-  var totalRecord, currentPage;
+  var totalRecord, currentPage, empId;
+  var del_idstr = "";
   var empName_add_input = "#empName_add_input";
   var empEmail_add_input = "#empEmail_add_input";
   var empEmail_update_input = "#empEmail_update_input";
@@ -456,12 +492,59 @@
 
   $(document).on("click", ".delete_btn", function(){
     var empName = $(this).parents("tr").find("td:eq(2)").text();
-    var empId = $(this).attr("del-id");
-    if(confirm("Are you sure you want to delete user \"" + empName +"\"?")){
+    empId = $(this).parents("tr").find("td:eq(1)").text();
+    $("#message_delete_static").text("Are you sure you will delete user \"" + empName +"\"?");
+    $("#empDeleteModal").modal({
+      backdrop: "static"
+    });
+  });
+
+  $("#emp_delete_all_btn").click(function(){
+    var empNames = "";
+    del_idstr = "";
+    $.each($(".check_item:checked"), function(){
+      empNames += $(this).parents("tr").find("td:eq(2)").text() + ",";
+      del_idstr += $(this).parents("tr").find("td:eq(1)").text() + "-";
+    });
+    empNames = empNames.substring(0, empNames.length - 1);
+    del_idstr = del_idstr.substring(0, empNames.length - 1);
+
+    if(empNames.includes(",")){
+      $("#message_delete_static").text("Are you sure you will delete these users: \"" + empNames +"\"?");
+      $("#empDeleteModal").modal({
+        backdrop: "static"
+      });
+    } else if(empNames.length > 0) {
+      $("#message_delete_static").text("Are you sure you will delete user \"" + empNames +"\"?");
+      $("#empDeleteModal").modal({
+        backdrop: "static"
+      });
+    } else {
+      $("#message_warning_static").text("You should select some items.");
+      $("#warningModal").modal({
+        backdrop: "static"
+      });
+    }
+  });
+
+  $("#confirm_delete_btn").click(function(){
+    if(del_idstr === ""){
       $.ajax({
         url:"${APP_PATH}/emp/" + empId,
         type:"DELETE",
         success:function(result){
+          $("#empDeleteModal").modal('hide');
+          to_page(currentPage);
+        }
+      });
+    } else {
+      $.ajax({
+        url:"${APP_PATH}/emp/" + del_idstr,
+        type:"DELETE",
+        success:function(result){
+          del_idstr = "";
+          $("#empDeleteModal").modal('hide');
+          $("#check_all").prop("checked", false);
           to_page(currentPage);
         }
       });
@@ -475,27 +558,6 @@
   $(document).on("click", ".check_item", function(){
     var flag = $(".check_item:checked").length === $(".check_item").length;
     $("#check_all").prop("checked", flag);
-  });
-
-  $("#emp_delete_all_btn").click(function(){
-    var empNames = "";
-    var del_idstr = "";
-    $.each($(".check_item:checked"), function(){
-      empNames += $(this).parents("tr").find("td:eq(2)").text() + ",";
-      del_idstr += $(this).parents("tr").find("td:eq(1)").text() + "-";
-    });
-    empNames = empNames.substring(0, empNames.length - 1);
-    del_idstr = del_idstr.substring(0, empNames.length - 1);
-    if(confirm("Are you sure you want to delete users: \"" + empNames +"\"?")){
-      $.ajax({
-        url:"${APP_PATH}/emp/" + del_idstr,
-        type:"DELETE",
-        success:function(result){
-          $("#check_all").prop("checked", false);
-          to_page(currentPage);
-        }
-      });
-    }
   });
 </script>
 </body>
