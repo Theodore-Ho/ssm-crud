@@ -1,6 +1,6 @@
 # ssm-crud
 
-This is the project demo of [tutorial from Bilibili](https://www.bilibili.com/video/BV17W411g7zP?p=1).
+This is the project demo of tutorial from Bilibili [尚硅谷SSM实战演练丨ssm整合快速开发CRUD](https://www.bilibili.com/video/BV17W411g7zP?p=1).
 
 ## Dev Environment
 * MacOS
