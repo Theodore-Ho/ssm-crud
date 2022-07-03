@@ -165,6 +165,16 @@
     </div>
   </div>
   <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <form class="navbar-form navbar-left">
+        <div class="form-group">
+          <input type="text" class="form-control" id="search_body" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default" id="search_submit">Submit</button>
+      </form>
+    </div>
+  </div>
+  <div class="row">
     <div class="col-md-4 col-md-offset-8">
       <button type="button" class="btn btn-primary" id="emp_add_modal_btn">Add New</button>
       <button type="button" class="btn btn-danger" id="emp_delete_all_btn">Delete</button>
@@ -590,6 +600,29 @@
     if(rows !== 20){
       rows = 20;
       to_page(1);
+    }
+  });
+
+  $("#search_submit").click(function() {
+    var empName = $("#search_body").val();
+    if(empName === "" || empName === null || empName === undefined){
+      $("#message_warning_static").text("You should input a name.");
+      $("#warningModal").modal({
+        backdrop: "static"
+      });
+    } else {
+      $.ajax({
+        url:"${APP_PATH}/find/" + empName,
+        type:"GET",
+        success:function(result){
+          if(result.extend.find_msg === -1){
+            $("#message_warning_static").text("This user is not exiists.");
+            $("#warningModal").modal({
+              backdrop: "static"
+            });
+          }
+        }
+      });
     }
   });
 </script>

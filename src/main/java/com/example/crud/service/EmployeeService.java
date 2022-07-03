@@ -48,4 +48,12 @@ public class EmployeeService {
         criteria.andEmpIdIn(ids);
         employeeMapper.deleteByExample(example);
     }
+
+    public boolean findEmpByName(String empName) {
+        EmployeeExample example = new EmployeeExample();
+        EmployeeExample.Criteria criteria = example.createCriteria();
+        criteria.andEmpNameEqualTo(empName);
+        List<Employee> employees = employeeMapper.selectByExample(example);
+        return !employees.isEmpty();
+    }
 }

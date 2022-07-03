@@ -102,4 +102,25 @@ public class EmployeeController {
         return Msg.success();
     }
 
+    // not finish
+    @RequestMapping(value = "/find/{empName}", method = RequestMethod.GET)
+    @ResponseBody
+    public Msg getEmp(@PathVariable("empName") String empName) {
+        boolean exist = employeeService.findEmpByName(empName);
+        if(exist){
+            List<Employee> emps = employeeService.getAll();
+            Integer empIndex = 0;
+            for(Employee e : emps){
+                if(e.getEmpName().equalsIgnoreCase(empName)){
+                    break;
+                }
+                System.out.println(empIndex);
+                empIndex++;
+            }
+            return Msg.success().add("find_msg", empIndex);
+        } else {
+            return Msg.fail().add("find_msg", -1);
+        }
+    }
+
 }
