@@ -156,6 +156,8 @@
     </div>
   </div>
 </div>
+
+
 <div class="container">
   <div class="row">
     <div class="col-md-12">
@@ -166,6 +168,16 @@
     <div class="col-md-4 col-md-offset-8">
       <button type="button" class="btn btn-primary" id="emp_add_modal_btn">Add New</button>
       <button type="button" class="btn btn-danger" id="emp_delete_all_btn">Delete</button>
+      <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Rows <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" style="min-width:73px">
+          <li id="display_5_rows"><a href="#">5</a></li>
+          <li id="display_10_rows"><a href="#">10</a></li>
+          <li id="display_20_rows"><a href="#">20</a></li>
+        </ul>
+      </div>
     </div>
   </div>
   <div class="row">
@@ -197,6 +209,7 @@
 
   var totalRecord, currentPage, empId;
   var del_idstr = "";
+  var rows = 5;
   var empName_add_input = "#empName_add_input";
   var empEmail_add_input = "#empEmail_add_input";
   var empEmail_update_input = "#empEmail_update_input";
@@ -208,10 +221,9 @@
   function to_page(pn) {
     $.ajax({
       url:"${APP_PATH}/emps",
-      data:"pn=" + pn,
+      data:"pn=" + pn + "&rows=" + rows,
       type:"GET",
       success:function(result){
-        //console.log(result)
         build_emps_table(result);
         build_page_info(result);
         build_page_nav(result);
@@ -558,6 +570,27 @@
   $(document).on("click", ".check_item", function(){
     var flag = $(".check_item:checked").length === $(".check_item").length;
     $("#check_all").prop("checked", flag);
+  });
+
+  $("#display_5_rows").click(function(){
+    if(rows !== 5){
+      rows = 5;
+      to_page(1);
+    }
+  });
+
+  $("#display_10_rows").click(function(){
+    if(rows !== 10){
+      rows = 10;
+      to_page(1);
+    }
+  });
+
+  $("#display_20_rows").click(function(){
+    if(rows !== 20){
+      rows = 20;
+      to_page(1);
+    }
   });
 </script>
 </body>

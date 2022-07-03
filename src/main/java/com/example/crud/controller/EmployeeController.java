@@ -24,8 +24,10 @@ public class EmployeeController {
 
     @RequestMapping("/emps")
     @ResponseBody
-    public Msg getEmpsWithJson(@RequestParam(value = "pn", defaultValue = "1") Integer pn, Model model) {
-        PageHelper.startPage(pn, 5);
+    public Msg getEmpsWithJson(@RequestParam(value = "pn", defaultValue = "1") Integer pn,
+                               @RequestParam(value = "rows", defaultValue = "5") Integer rows,
+                               Model model) {
+        PageHelper.startPage(pn, rows);
         List<Employee> emps = employeeService.getAll();
         PageInfo page = new PageInfo(emps, 5);
         return Msg.success().add("pageInfo", page);
