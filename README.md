@@ -2,6 +2,8 @@
 
 This is the project demo of tutorial from Bilibili [尚硅谷SSM实战演练丨ssm整合快速开发CRUD](https://www.bilibili.com/video/BV17W411g7zP?p=1).
 
+![alt demoImage](src/test/resources/image/demo.png)
+
 ## Dev Environment
 * MacOS
 * IDEA 2021
