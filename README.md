@@ -8,6 +8,7 @@ This is the project demo of tutorial from Bilibili [尚硅谷SSM实战演练丨s
 * MacOS
 * IDEA 2021
 * Tomcat 8.5, **can not later than Tomcat 9**
+* Java 17
 
 ## More Info
 Some of the features was added by myself, such as frontend-validate for email, backend-validate for update, improve the delete confirm window... And I also added a feature that users could choose how many rows to be display.
